@@ -1,5 +1,7 @@
 package com.alejandro.microservices.pagos.service;
 
+import com.alejandro.microservices.pagos.auth.User;
+import com.alejandro.microservices.pagos.dto.CreatePaymentRequest;
 import com.alejandro.microservices.pagos.dto.PaymentResponse;
 import com.alejandro.microservices.pagos.gateway.FakePaymentGateway;
 import com.alejandro.microservices.pagos.model.Payment;
@@ -19,27 +21,31 @@ public class PaymentService {
     private final FakePaymentGateway fakePaymentGateway;
 
     @Autowired
-    public PaymentService(PaymentRepository paymentRepository, FakePaymentGateway fakePaymentGateway) {
+    public PaymentService(PaymentRepository paymentRepository,
+                        FakePaymentGateway fakePaymentGateway) {
         this.paymentRepository = paymentRepository;
         this.fakePaymentGateway = fakePaymentGateway;
     }
 
-    public List<PaymentResponse> getAllPayments() {
-        return paymentRepository.findAll().stream()
-                .map(this::mapToDto)
-                .collect(Collectors.toList());
+    public List<Payment> getPaymentsByUser(User user) {
+        return paymentRepository.findByUser(user);
     }
 
-    public Optional<PaymentResponse> getPaymentById(Long id) {
-        return paymentRepository.findById(id)
-                .map(this::mapToDto);
+    public Optional<Payment> getPaymentByIdAndUser(Long id, User user) {
+        return paymentRepository.findByIdAndUser(id, user);
     }
 
-    public PaymentResponse createPayment(Payment payment) {
-        payment.setCreatedAt(LocalDateTime.now());
-        payment.setStatus("PENDING");
-        Payment savedPayment = paymentRepository.save(payment);
-        return mapToDto(savedPayment);
+    public Payment createPayment(CreatePaymentRequest request, User currentUser) {
+        Payment payment = Payment.builder()
+                .amount(request.getAmount())
+                .currency(request.getCurrency())
+                .method(request.getMethod())
+                .status("PENDING")
+                .createdAt(LocalDateTime.now())
+                .user(currentUser)
+                .build();
+
+        return paymentRepository.save(payment);
     }
 
     public PaymentResponse processPayment(Long id) {

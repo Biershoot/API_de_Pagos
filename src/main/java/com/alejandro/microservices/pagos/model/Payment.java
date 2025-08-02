@@ -1,5 +1,6 @@
 package com.alejandro.microservices.pagos.model;
 
+import com.alejandro.microservices.pagos.auth.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -27,5 +28,8 @@ public class Payment {
     private LocalDateTime createdAt;
 
     private LocalDateTime processedAt;
-}
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+}
