@@ -1,6 +1,7 @@
 package com.alejandro.microservices.pagos.service;
 
 import com.alejandro.microservices.pagos.dto.PaymentResponse;
+import com.alejandro.microservices.pagos.gateway.FakePaymentGateway;
 import com.alejandro.microservices.pagos.model.Payment;
 import com.alejandro.microservices.pagos.repository.PaymentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,10 +16,12 @@ import java.util.stream.Collectors;
 public class PaymentService {
 
     private final PaymentRepository paymentRepository;
+    private final FakePaymentGateway fakePaymentGateway;
 
     @Autowired
-    public PaymentService(PaymentRepository paymentRepository) {
+    public PaymentService(PaymentRepository paymentRepository, FakePaymentGateway fakePaymentGateway) {
         this.paymentRepository = paymentRepository;
+        this.fakePaymentGateway = fakePaymentGateway;
     }
 
     public List<PaymentResponse> getAllPayments() {
@@ -39,9 +42,10 @@ public class PaymentService {
         return mapToDto(savedPayment);
     }
 
-    public PaymentResponse processPayment(Long id, String status) {
+    public PaymentResponse processPayment(Long id) {
         return paymentRepository.findById(id).map(payment -> {
-            payment.setStatus(status);
+            boolean approved = fakePaymentGateway.processPayment(payment.getAmount(), payment.getMethod());
+            payment.setStatus(approved ? "APPROVED" : "REJECTED");
             payment.setProcessedAt(LocalDateTime.now());
             Payment updatedPayment = paymentRepository.save(payment);
             return mapToDto(updatedPayment);

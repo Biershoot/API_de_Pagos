@@ -56,10 +56,9 @@ public class PaymentController {
     }
 
     @PostMapping("/{id}/process")
-    public ResponseEntity<PaymentResponse> processPayment(@PathVariable Long id, @RequestParam boolean approved) {
+    public ResponseEntity<PaymentResponse> processPayment(@PathVariable Long id) {
         try {
-            String status = approved ? "APPROVED" : "REJECTED";
-            PaymentResponse processedPayment = paymentService.processPayment(id, status);
+            PaymentResponse processedPayment = paymentService.processPayment(id);
             return ResponseEntity.ok(processedPayment);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
