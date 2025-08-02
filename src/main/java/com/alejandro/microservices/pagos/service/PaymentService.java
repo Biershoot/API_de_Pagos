@@ -19,12 +19,15 @@ public class PaymentService {
 
     private final PaymentRepository paymentRepository;
     private final FakePaymentGateway fakePaymentGateway;
+    private final MailService mailService;
 
     @Autowired
     public PaymentService(PaymentRepository paymentRepository,
-                        FakePaymentGateway fakePaymentGateway) {
+                        FakePaymentGateway fakePaymentGateway,
+                        MailService mailService) {
         this.paymentRepository = paymentRepository;
         this.fakePaymentGateway = fakePaymentGateway;
+        this.mailService = mailService;
     }
 
     public List<Payment> getPaymentsByUser(User user) {
@@ -45,7 +48,12 @@ public class PaymentService {
                 .user(currentUser)
                 .build();
 
-        return paymentRepository.save(payment);
+        Payment savedPayment = paymentRepository.save(payment);
+
+        // Enviar notificación por correo de creación de pago
+        mailService.sendPaymentCreatedNotification(currentUser, savedPayment);
+
+        return savedPayment;
     }
 
     public PaymentResponse processPayment(Long id) {
@@ -54,6 +62,10 @@ public class PaymentService {
             payment.setStatus(approved ? "APPROVED" : "REJECTED");
             payment.setProcessedAt(LocalDateTime.now());
             Payment updatedPayment = paymentRepository.save(payment);
+
+            // Enviar notificación por correo del resultado del procesamiento
+            mailService.sendPaymentNotification(payment.getUser(), updatedPayment);
+
             return mapToDto(updatedPayment);
         }).orElseThrow(() -> new RuntimeException("Payment not found with id " + id));
     }
