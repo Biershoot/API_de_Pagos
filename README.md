@@ -10,6 +10,20 @@
 
 API RESTful para procesamiento de pagos que simula una pasarela de pago integrable con múltiples métodos de pago. Implementada con Spring Boot, seguridad JWT, notificaciones por correo electrónico y documentación Swagger.
 
+## 🔍 Problemática Resuelta
+
+Este proyecto soluciona varios desafíos críticos en el procesamiento de pagos digitales:
+
+1. **Fragmentación de métodos de pago**: En Latinoamérica, cada país tiene sus propios métodos de pago preferidos (Nequi en Colombia, Yape en Perú, etc.). Esta API unifica estos métodos en una sola plataforma.
+
+2. **Seguridad en transacciones**: Implementa un sistema robusto de autenticación y autorización con JWT para proteger datos sensibles de pago, cumpliendo con estándares de seguridad.
+
+3. **Trazabilidad de pagos**: Permite seguir el estado de los pagos en tiempo real y mantiene un historial completo de transacciones, facilitando la resolución de disputas.
+
+4. **Experiencia de usuario**: Notifica automáticamente a los usuarios sobre el estado de sus pagos por correo electrónico, mejorando la experiencia y reduciendo consultas al servicio de atención.
+
+5. **Escalabilidad**: La arquitectura basada en microservicios permite escalar horizontalmente para manejar volúmenes variables de transacciones, especialmente durante picos de demanda.
+
 ## 🚀 Características
 
 - **Autenticación segura** con JWT
