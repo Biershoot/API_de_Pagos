@@ -215,4 +215,4 @@ public void sendPaymentNotification(User user, Payment payment) {
 
 ## 👨‍💻 Autor
 
-Alejandro - [GitHub](https://github.com/Biershoot)
+Alejandro Calderon- [GitHub](https://github.com/Biershoot)
